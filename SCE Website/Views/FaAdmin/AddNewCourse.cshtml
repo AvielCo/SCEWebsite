@@ -1,0 +1,32 @@
+﻿@model SCE_Website.Models.Course
+
+@{
+    ViewBag.Title = "AddNewCourse";
+    var lecturers = (List<string>)Session["ListLecturers"];
+}
+
+<h2>AddNewCourse</h2>
+
+<form action="AddCourse" method="post">
+    <input id="CourseName" type="text" name="CourseName" placeholder="Course Name" />
+    <br />
+    <input id="Day" type="text" name="Day" placeholder="Day" />
+    <br />
+    <input id="Hour" type="text" name="Hour" placeholder="Hour" />
+    <br />
+    <input id="Classroom" type="text" name="Classroom" placeholder="Classroom" />
+    <br />
+    <select id="SelectedLecturer" name="SelectedLecturer">
+        @{
+            if (lecturers != null)
+            {
+                foreach (var i in lecturers)
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        }
+    </select>
+    <p>&nbsp;</p>
+    <input id="AddCourse" type="submit" value="confirm" name="AddCourse" />
+</form>

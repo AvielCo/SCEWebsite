@@ -1,0 +1,47 @@
+﻿@model SCE_Website.ViewModel.CourseViewModel
+@using SCE_Website.Models
+@{ 
+    var courses = (List<string>)Session["ListCourses"];
+}
+    <form method="post" action="ChangeCourseSchedule">
+        <select id="SelectedCourse" name="SelectedCourse">
+            <option value="dummy">select course</option>
+            @if (courses != null)
+            {
+                foreach (var i in courses)
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        </select>
+        <input id="Classroom" type="text" placeholder="Classroom" name="Classroom" />
+        <input id="Day" type="text" placeholder="Day" name="Day" />
+        <input id="Hour" type="text" placeholder="Hour" name="Hour" />
+        <input id="submit" type="submit" value="submit" name="submit" />
+    </form>
+    <hr />
+<table>courses table</table>
+
+<form method="post" action="ChangeExamSchedule">
+    <select id="SelectedCourse" name="SelectedCourse">
+        <option value="dummy">select course</option>
+        @if (courses != null)
+        {
+            foreach (var i in courses)
+            {
+                <option value="@i">@i</option>
+            }
+        }
+    </select>
+    <select id="SelectedExam" name="SelectedExam">
+        <option value="ExamA">Exam A</option>
+        <option value="ExamB">Exam B</option>
+    </select>
+    <input id="Date" type="date" placeholder="Date" name="Date" />
+    <input id="Hour" type="text" placeholder="Hour" name="Hour" />
+    <input id="Classroom" type="text" placeholder="Classroom" name="Classroom" />
+    <input id="submit" type="submit" value="submit" name="submit" />
+</form>
+
+<table>exams table</table>
+

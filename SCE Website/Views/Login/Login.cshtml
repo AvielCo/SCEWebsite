@@ -1,0 +1,31 @@
+﻿@model  SCE_Website.ViewModel.UserViewModel
+@using SCE_Website.Models
+@using SCE_Website.Controllers
+    <html lang="en">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="~/Content/login_style.css" />
+    </head>
+    <body>
+        <div class="wrapper fadeInDown">
+            <div id="formContent">
+                <!-- Tabs Titles -->
+                <h2 class="active"> WELCOME TO </h2>
+
+                <!-- Icon -->
+                <div class="fadeIn first">
+                    <img src="https://www.sce.ac.il/ver/6/tpl/website/img/logo1.png" id="icon" alt="User Icon" />
+                </div>
+
+                <!-- Login Form -->
+                <form action="Submit" method="post">
+                    <input type="text" id="Username" class="fadeIn second" name="Username" placeholder="login">
+                    <input type="password" id="Password" class="fadeIn third" name="Password" placeholder="password">
+                    <input id="SubmitLogin" type="submit" class="fadeIn fourth" value="Log In" name="SubmitLogin">
+                </form>
+            </div>
+        </div>
+        
+    </body>
+
+    </html>

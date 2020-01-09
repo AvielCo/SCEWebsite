@@ -1,0 +1,32 @@
+﻿@model SCE_Website.ViewModel.StudentViewModel
+@using SCE_Website.Models
+@{
+    ViewBag.Title = "View";
+}
+    <head>
+        <link rel="stylesheet" type="text/css" href="~/Content/table_style.css" />
+    </head>
+    <form>
+        <table class="cointainer">
+            <thead>
+                <tr class="table-primary">
+                    <th>Course Name</th>
+                    <th>Course Grade</th>
+                    <th>Exam Grade</th>
+                </tr>
+            </thead>
+            @{
+                foreach (Student obj in Model.Students)
+                {
+                    <tbody>
+                        <tr>
+                            <td>@obj.CourseName</td>
+                            <td>@obj.CourseGrade</td>
+                            <td>@obj.ExamGrade</td>
+                        </tr>
+                    </tbody>
+                }
+
+            }
+        </table>
+    </form>

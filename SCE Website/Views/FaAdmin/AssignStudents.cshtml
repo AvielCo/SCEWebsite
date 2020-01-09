@@ -1,0 +1,47 @@
+﻿@model SCE_Website.ViewModel.UserViewModel
+@using SCE_Website.Models
+
+@{
+    ViewBag.Title = "AddStudentToCourse";
+    var courses = (List<string>)Session["ListCourses"];
+}
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/table_style.css" />
+</head>
+    <form action="AssignStudents" method="post">
+        <select id="SelectedCourse" name="SelectedCourse">
+            @{
+                if (courses != null)
+                {
+                    foreach (var i in courses)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                }
+            }
+        </select>
+        <input id="StudentId" type="text" name="StudentId" placeholder="StudentId" />
+        <br />
+        <input id="AssignStudent" type="submit" value="confirm" name="AssignStudent" />
+        <hr />
+    </form>
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">Student ID</th>
+                <th scope="col">Student Name</th>
+            </tr>
+        </thead>
+        @{
+            foreach (User obj in Model.Users)
+            {
+                <tbody>
+                    <tr>
+                        <td>@obj.ID</td>
+                        <td>@obj.Name</td>
+                    </tr>
+                </tbody>
+            }
+
+        }
+    </table>

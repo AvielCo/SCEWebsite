@@ -1,0 +1,72 @@
+﻿@model IEnumerable<CourseStudents>
+@using SCE_Website.Models
+
+@{
+    ViewBag.Title = "ShowCoursesSchedule";
+    var courses = (List<string>)Session["ListCoursesName"];
+
+}
+<form action="GetStudentsInCourse" method="post">
+    <select id="SelectedCourse" name="SelectedCourse">
+        @{
+            <option value="dummy">select course</option>
+            if (courses != null)
+            {
+                foreach (var i in courses)
+                {
+                    if (i.Equals(Session["CurrentCourse"]))
+                    {
+                        <option value="@i" selected>@i</option>
+                    }
+                    else
+                    {
+                        <option value="@i">@i</option>
+                    }
+                }
+            }
+
+        }
+
+    </select> <input id="getcourse" type="submit" value="confirm" name="SubmitCourse" />
+</form>
+<hr />
+<table class="table table-hover">
+    <thead>
+        <tr class="table-primary">
+            <th scope="col">Student ID</th>
+            <th scope="col">Student Name</th>
+            <th scope="col">Course Grade</th>
+            <th scope="col">Exam Grade</th>
+        </tr>
+    </thead>
+    @{
+        if (Model != null)
+        {
+            foreach (var obj in Model)
+            {
+                <tbody>
+                    <tr>
+                        <td>@obj.StudentId</td>
+                        <td>@obj.Name</td>
+                        <td>@obj.CourseGrade</td>
+                        <td>@obj.ExamGrade</td>
+                    </tr>
+                </tbody>
+            }
+
+        }
+
+    }
+</table>
+<br />
+<hr />
+<form action="ChangeStudentGrade" method="post">
+    @{ if (Model != null)
+        {
+            <input id="StudentId" type="text" name="StudentID" placeholder="Student ID" />
+            <input id="NewGrade" type="text" name="NewGrade" placeholder="New grade" />
+            <input id="ExamGrade" type="text" name="ExamGrade" placeholder="New exam grade" />
+            <input id="submit" type="submit" value="confirm" />
+        }
+    }
+</form>
