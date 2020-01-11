@@ -10,9 +10,55 @@
 <form action="AddCourse" method="post">
     <input id="CourseName" type="text" name="CourseName" placeholder="Course Name" />
     <br />
-    <input id="Day" type="text" name="Day" placeholder="Day" />
+    <select id="Day" name="Day">
+        <option>Select Day</option>
+        <option value="Sunday">Sunday</option>
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+    </select>
     <br />
-    <input id="Hour" type="text" name="Hour" placeholder="Hour" />
+    <select id="StartHour" name="StartHour">
+        <option>Select starting hour</option>
+        <option value="8">08:00</option>
+        <option value="9">09:00</option>
+        <option value="10">10:00</option>
+        <option value="11">11:00</option>
+        <option value="12">12:00</option>
+        <option value="13">13:00</option>
+        <option value="14">14:00</option>
+        <option value="15">15:00</option>
+        <option value="16">16:00</option>
+        <option value="17">17:00</option>
+        <option value="18">18:00</option>
+        <option value="19">19:00</option>
+        <option value="20">20:00</option>
+        <option value="21">21:00</option>
+        <option value="22">22:00</option>
+        <option value="23">23:00</option>
+    </select>
+    <br />
+    <select id="FinishHour" name="FinishHour">
+        <option>Select ending hour</option>
+        <option value="8">08:00</option>
+        <option value="9">09:00</option>
+        <option value="10">10:00</option>
+        <option value="11">11:00</option>
+        <option value="12">12:00</option>
+        <option value="13">13:00</option>
+        <option value="14">14:00</option>
+        <option value="15">15:00</option>
+        <option value="16">16:00</option>
+        <option value="17">17:00</option>
+        <option value="18">18:00</option>
+        <option value="19">19:00</option>
+        <option value="20">20:00</option>
+        <option value="21">21:00</option>
+        <option value="22">22:00</option>
+        <option value="23">23:00</option>
+    </select>
     <br />
     <input id="Classroom" type="text" name="Classroom" placeholder="Classroom" />
     <br />
@@ -27,6 +73,6 @@
             }
         }
     </select>
-    <p>&nbsp;</p>
+    <br />
     <input id="AddCourse" type="submit" value="confirm" name="AddCourse" />
 </form>

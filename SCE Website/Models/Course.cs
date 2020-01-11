@@ -19,10 +19,11 @@ namespace SCE_Website.Models
         public string Day { get; set; }
         [Required]
         [RegularExpression("^0[8-9] | 1[0-9]$")]
-        public string Hour { get; set; }
+        public int StartHour { get; set; }
+        [RegularExpression("^0[8-9] | 1[0-9]$")]
+        public int FinishHour { get; set; }
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Classroom must be under 50 characters and greater than 2 characters.")]
-        [RegularExpression("\b(S | C | E)[1-9]+\b$")]
         public string Classroom { get; set; }
         [Required]
         public string LecturerID { get; set; }

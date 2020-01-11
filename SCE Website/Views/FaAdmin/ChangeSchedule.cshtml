@@ -1,6 +1,7 @@
-﻿@model SCE_Website.ViewModel.CourseViewModel
+﻿@model SCE_Website.ViewModel.CoursesExamsViewModel
 @using SCE_Website.Models
-@{ 
+
+@{
     var courses = (List<string>)Session["ListCourses"];
 }
     <form method="post" action="ChangeCourseSchedule">
@@ -15,12 +16,82 @@
             }
         </select>
         <input id="Classroom" type="text" placeholder="Classroom" name="Classroom" />
-        <input id="Day" type="text" placeholder="Day" name="Day" />
-        <input id="Hour" type="text" placeholder="Hour" name="Hour" />
+        <select id="Day" name="Day">
+            <option>Select Day</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+        </select>
+        <select id="StartHour" name="StartHour">
+            <option>Select starting hour</option>
+            <option value="8">08:00</option>
+            <option value="9">09:00</option>
+            <option value="10">10:00</option>
+            <option value="11">11:00</option>
+            <option value="12">12:00</option>
+            <option value="13">13:00</option>
+            <option value="14">14:00</option>
+            <option value="15">15:00</option>
+            <option value="16">16:00</option>
+            <option value="17">17:00</option>
+            <option value="18">18:00</option>
+            <option value="19">19:00</option>
+            <option value="20">20:00</option>
+            <option value="21">21:00</option>
+            <option value="22">22:00</option>
+            <option value="23">23:00</option>
+        </select>
+        <select id="FinishHour" name="FinishHour">
+            <option>Select ending hour</option>
+            <option value="8">08:00</option>
+            <option value="9">09:00</option>
+            <option value="10">10:00</option>
+            <option value="11">11:00</option>
+            <option value="12">12:00</option>
+            <option value="13">13:00</option>
+            <option value="14">14:00</option>
+            <option value="15">15:00</option>
+            <option value="16">16:00</option>
+            <option value="17">17:00</option>
+            <option value="18">18:00</option>
+            <option value="19">19:00</option>
+            <option value="20">20:00</option>
+            <option value="21">21:00</option>
+            <option value="22">22:00</option>
+            <option value="23">23:00</option>
+        </select>
         <input id="submit" type="submit" value="submit" name="submit" />
     </form>
-    <hr />
-<table>courses table</table>
+<hr />
+<table class="table table-hover">
+    <thead>
+        <tr class="table-primary">
+            <th scope="col">Course Name</th>
+            <th scope="col">Classroom</th>
+            <th scope="col">Day</th>
+            <th scope="col">Starting Hour</th>
+            <th scope="col">Ending Hour</th>
+        </tr>
+    </thead>
+    @{
+        foreach (Course obj in Model.Courses)
+        {
+            <tbody>
+                <tr>
+                    <td>@obj.CourseName</td>
+                    <td>@obj.Classroom</td>
+                    <td>@obj.Day</td>
+                    <td>@obj.StartHour</td>
+                    <td>@obj.FinishHour</td>
+                </tr>
+            </tbody>
+        }
+
+    }
+</table>
 
 <form method="post" action="ChangeExamSchedule">
     <select id="SelectedCourse" name="SelectedCourse">
@@ -43,5 +114,63 @@
     <input id="submit" type="submit" value="submit" name="submit" />
 </form>
 
-<table>exams table</table>
+<table class="table table-hover">
+    <thead>
+        <tr class="table-primary">
+            <th scope="col">Course Name</th>
+            <th scope="col">Classroom</th>
+            <th scope="col">Exam A Date</th>
+            <th scope="col">Exam A Starting Hour</th>
+            <th scope="col">Exam A Ending Hour</th>
+            <th scope="col">Exam B Date</th>
+            <th scope="col">Exam B Starting Hour</th>
+            <th scope="col">Exam B Ending Hour</th>
+        </tr>
+    </thead>
+    @{
+        foreach (Exam obj in Model.Exams)
+        {
+            <tbody>
+                    <tr>
+                        <td>@obj.CourseName</td>
+                        @{
+                            if (obj.Classroom != null)
+                            {
+                                <td>@obj.Classroom</td>
+                            }
+                            else
+                            {
+                                <td>TBA</td>
+                            }
+                            if (obj.ExamADate != null)
+                            {
+                                <td>@obj.ExamADate</td>
+                                <td>@obj.ExamAStart</td>
+                                <td>@obj.ExamBFinish</td>
+                            }
+                            else
+                            {
+                                <td>TBA</td>
+                                <td>TBA</td>
+                                <td>TBA</td>
+                            }
+                            if (obj.ExamBDate != null)
+                            {
+                                <td>@obj.ExamBDate</td>
+                                <td>@obj.ExamBStart</td>
+                                <td>@obj.ExamAFinish</td>
+                            }
+                            else
+                            {
+                                <td>TBA</td>
+                                <td>TBA</td>
+                                <td>TBA</td>
+                            }
+                        }
+                    </tr>
+            </tbody>
+        }
+
+    }
+</table>
 

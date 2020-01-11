@@ -11,44 +11,56 @@
                 <th scope="col">Course Name</th>
                 <th scope="col">Classroom</th>
                 <th scope="col">Exam A Date</th>
+                <th scope="col">Exam A Starting Hour</th>
+                <th scope="col">Exam A Ending Hour</th>
                 <th scope="col">Exam B Date</th>
+                <th scope="col">Exam B Starting Hour</th>
+                <th scope="col">Exam B Ending Hour</th>
             </tr>
         </thead>
         @{
-            foreach (Exam obj in Model.Exams)
-            {
-                <tbody>
-                    <tr>
-                        <td>@obj.CourseName</td>
-                        @{
-                            if (obj.Classroom != null)
-                            {
-                                <td>@obj.Classroom</td>
-                            }
-                            else
-                            {
-                                <td>TBA</td>
-                            }
-                            if (obj.ExamA != null)
-                            {
-                                <td>@obj.ExamA</td>
-                            }
-                            else
-                            {
-                                <td>TBA</td>
-                            }
-                            if (obj.ExamB != null)
-                            {
-                                <td>@obj.ExamB</td>
-                            }
-                            else
-                            {
-                                <td>TBA</td>
-                            }
+        foreach (Exam obj in Model.Exams)
+        {
+            <tbody>
+                        <tr>
+                    <td>@obj.CourseName</td>
+                    @{
+                        if (obj.Classroom != null)
+                        {
+                            <td>@obj.Classroom</td>
                         }
-                    </tr>
-                </tbody>
-            }
+                        else
+                        {
+                            <td>TBA</td>
+                        }
+                        if (obj.ExamADate != null)
+                        {
+                            <td>@obj.ExamADate</td>
+                            <td>@obj.ExamAStart</td>
+                            <td>@obj.ExamBFinish</td>
+                        }
+                        else
+                        {
+                            <td>TBA</td>
+                            <td>TBA</td>
+                            <td>TBA</td>
+                        }
+                        if (obj.ExamBDate != null)
+                        {
+                            <td>@obj.ExamBDate</td>
+                            <td>@obj.ExamBStart</td>
+                            <td>@obj.ExamAFinish</td>
+                        }
+                        else
+                        {
+                            <td>TBA</td>
+                            <td>TBA</td>
+                            <td>TBA</td>
+                        }
+                    }
+                </tr>
+            </tbody>
+        }
 
         }
     </table>

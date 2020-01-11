@@ -11,19 +11,21 @@
                 <th scope="col">Course Name</th>
                 <th scope="col">Classroom</th>
                 <th scope="col">Day</th>
-                <th scope="col">Hour</th>
+                <th scope="col">Starting Hour</th>
+                <th scope="col">Ending Hour</th>
             </tr>
         </thead>
         @{
             foreach (Course obj in Model.Courses)
             {
                 <tbody>
-                    <tr>
-                        <td>@obj.CourseName</td>
-                        <td>@obj.Classroom</td>
-                        <td>@obj.Day</td>
-                        <td>@obj.Hour</td>
-                    </tr>
+                            <tr>
+                                <td>@obj.CourseName</td>
+                                <td>@obj.Classroom</td>
+                                <td>@obj.Day</td>
+                                <td>@obj.StartHour</td>
+                                <td>@obj.FinishHour</td>
+                            </tr>
                 </tbody>
             }
 

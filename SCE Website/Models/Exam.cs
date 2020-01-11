@@ -16,13 +16,12 @@ namespace SCE_Website.Models
 		public string CourseName { get; set; }
 		[Required]
 		[StringLength(50, MinimumLength = 2, ErrorMessage = "Classroom must be under 50 characters and greater than 2 characters.")]
-		[RegularExpression("\b(S | C | E)[1-9]+\b$")]
 		public string Classroom { get; set; }
-		[RegularExpression("^0[8-9] | 1[0-9]$")]
-		public string HourA { get; set; }
-		[RegularExpression("^0[8-9] | 1[0-9]$")]
-		public string HourB { get; set; }
-		public DateTime ExamA { get; set; } // YYYY-MM-DD
-		public DateTime ExamB { get; set; } // YYYY-MM-DD
+		public int ExamAStart { get; set; }
+		public int ExamBStart { get; set; }
+		public int ExamAFinish { get; set; }
+		public int ExamBFinish { get; set; }
+		public string ExamADate { get; set; } // YYYY-MM-DD
+		public string ExamBDate { get; set; } // YYYY-MM-DD
 	}
 }
