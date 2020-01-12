@@ -141,6 +141,12 @@ namespace SCE_Website.Controllers
                 UpdateComm.ExecuteNonQuery();
                 conn.Close();
             }
+            else
+            {
+                TempData["Error"] = "You must enter a value.";
+                return RedirectToAction("Menu");
+            }
+            TempData["Success"] = "Successfully changed student grade for " + sid + ".";
             return RedirectToAction("GetStudentsInMyCourses");
 
         }

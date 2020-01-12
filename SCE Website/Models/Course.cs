@@ -18,9 +18,8 @@ namespace SCE_Website.Models
         [RegularExpression("^\b((Mon|Tues|Wed(nes)?|Thur(s)?|Fri|Sat(ur)?|Sun)(day)?)\b$")]
         public string Day { get; set; }
         [Required]
-        [RegularExpression("^0[8-9] | 1[0-9]$")]
         public int StartHour { get; set; }
-        [RegularExpression("^0[8-9] | 1[0-9]$")]
+        [Required]
         public int FinishHour { get; set; }
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Classroom must be under 50 characters and greater than 2 characters.")]

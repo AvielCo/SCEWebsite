@@ -13,6 +13,7 @@ namespace SCE_Website.Models
 
         [Required]
         [Key, Column (Order = 0)]
+        [StringLength(9, MinimumLength = 2, ErrorMessage = "Username must be between 2 and 9 characters")]
         public string ID { get; set; }
         [Required]
         public string Password { get; set; }

@@ -13,10 +13,9 @@ namespace SCE_Website.Models
 
         [Required]
         [Key, Column(Order = 0)]
-        [StringLength(9, MinimumLength = 9, ErrorMessage = "Student ID must be under 9 characters")]
         public string StudentId { get; set; }
         [Required]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Name must be under 50 characters and greater than 2 characters.")]
+        [StringLength(50, MinimumLength = 2, ErrorMessage = "Course Name must be under between 2 and 50 characters.")]
         [Key, Column(Order = 1)]
         public string CourseName { get; set; }
         [RegularExpression("^(0|[1-9][0-9]?|100)$", ErrorMessage = "Grade must be between 0 to 100.")]

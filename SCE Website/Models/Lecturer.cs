@@ -13,11 +13,10 @@ namespace SCE_Website.Models
 
         [Required]
         [Key, Column(Order = 0)]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Lecturer ID must be under 9 characters")]
         public string LecturerId { get; set; }
         [Required]
         [Key, Column(Order = 1)]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Name must be under 50 characters and greater than 2 characters.")]
+        [StringLength(50, MinimumLength = 2, ErrorMessage = "Course Name must be under between 2 and 50 characters.")]
         public string CourseName { get; set; }
     }
 }

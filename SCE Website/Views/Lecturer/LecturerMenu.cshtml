@@ -2,9 +2,34 @@
 @{
     ViewBag.Title = "Lecturer";
 }
-
+<div>
     <form action="Menu" method="post">
         <input id="ShowCoursesSchedule" type="submit" value="Show my courses schedule" name="ShowCoursesSchedule" />
         <br />
 		<input id="ShowCourseStudents" type="submit" value="Show students in course" name="ShowCourseStudents" />
     </form>
+    <div>
+        @{
+            if (TempData["Success"] != null)
+            {
+                <script type="text/javascript">
+                            $(document).ready(function () {
+                                var yourPrompt= '@TempData["Success"]';
+                                alert(yourPrompt);
+                            });
+                </script>
+                TempData["Success"] = null;
+            }
+            else if (TempData["Error"] != null)
+            {
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        var yourPrompt = '@TempData["Error"]'
+                        alert(yourPrompt);
+                                        });
+                </script>
+                TempData["Error"] = null;
+            }
+        }
+    </div>
+</div>

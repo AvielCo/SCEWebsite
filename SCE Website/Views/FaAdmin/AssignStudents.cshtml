@@ -2,12 +2,8 @@
 @using SCE_Website.Models
 
 @{
-    ViewBag.Title = "AddStudentToCourse";
     var courses = (List<string>)Session["ListCourses"];
 }
-<head>
-    <link rel="stylesheet" type="text/css" href="~/Content/table_style.css" />
-</head>
     <form action="AssignStudents" method="post">
         <select id="SelectedCourse" name="SelectedCourse">
             @{

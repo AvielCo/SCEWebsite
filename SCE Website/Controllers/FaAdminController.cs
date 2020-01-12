@@ -63,6 +63,7 @@ namespace SCE_Website.Controllers
         public ActionResult AddCourse()
         {
             if (Session["Permission"] == null || Session["Permission"].ToString() != "FaAdmin") return View("~/Views/Error.cshtml");
+            //Add course
             var cname = Request.Form["CourseName"];
             var lid = Request.Form["SelectedLecturer"];
             var day = Request.Form["Day"];
@@ -75,7 +76,11 @@ namespace SCE_Website.Controllers
                           in courseDal.Courses
                           where x.CourseName.Equals(cname)
                           select x.CourseName).SingleOrDefault();
-            if (course != null) return RedirectToAction("Menu"); //course already exist
+            if (course != null)
+            {
+                TempData["Error"] = "Course " + course + " already exists in the system";
+                return RedirectToAction("Menu"); //course already exist
+            }
             var schedule = (from x
                             in courseDal.Courses
                             where x.Day.Equals(day) &&
@@ -100,21 +105,68 @@ namespace SCE_Website.Controllers
             command.Parameters.Add("@fhour", SqlDbType.Int).Value =fhour;
             command.Parameters.Add("@classroom", SqlDbType.NVarChar, 50).Value = classroom;
             command.Parameters.Add("@lid", SqlDbType.NVarChar, 50).Value = lid;
-            var exams = "INSERT INTO tblExams " +
-                        "(CourseName, Classroom, ExamADate, ExamBDate, ExamAStart, ExamAFinish, ExamBStart, ExamBFinish) " +
-                        "VALUES (@cname, @classroom, @adate, @bdate, @ashour, @afhour, @bshour, @bfhour)";
-            SqlCommand examscommand = new SqlCommand(exams, conn);
-            examscommand.Parameters.Add("@cname", SqlDbType.NVarChar, 50).Value = cname;
-            examscommand.Parameters.Add("@classroom", SqlDbType.NVarChar, 50).Value = "NULL";
-            examscommand.Parameters.Add("@adate", SqlDbType.NVarChar, 10).Value = null;
-            examscommand.Parameters.Add("@bdate", SqlDbType.NVarChar, 10).Value = null;
-            examscommand.Parameters.Add("@ashour", SqlDbType.Int, 50).Value = 0;
-            examscommand.Parameters.Add("@afhour", SqlDbType.Int, 50).Value = 0;
-            examscommand.Parameters.Add("@bshour", SqlDbType.Int, 50).Value = 0;
-            examscommand.Parameters.Add("@bfhour", SqlDbType.Int, 50).Value = 0;
+            //Add exam schedule to course
+            string ashour = Request.Form["ExamAStartHour"],
+                afhour = Request.Form["ExamAFinishHour"],
+                bshour = Request.Form["ExamBStartHour"],
+                bfhour = Request.Form["ExamBFinishHour"];
+            int astarthour = Convert.ToInt32(ashour), afinishhour = Convert.ToInt32(afhour);
+            int bstarthour = Convert.ToInt32(bshour), bfinishhour = Convert.ToInt32(bfhour);
+            var examDal = new ExamDal();
+            if (astarthour >= afinishhour)
+            {
+                TempData["Error"] = "Start hour cannot be after finish hour.";
+                return RedirectToAction("Menu");
+            }
+            if (bstarthour >= bfinishhour)
+            {
+                TempData["Error"] = "Start hour cannot be after finish hour.";
+                return RedirectToAction("Menu");
+            }
+            var examADate = Convert.ToDateTime(Request.Form["ADate"]);
+            var examBDate = Convert.ToDateTime(Request.Form["BDate"]);
+            if (DateTime.Compare(examADate, DateTime.Now) <= 0 ||
+                DateTime.Compare(examBDate, DateTime.Now) <= 0 ||
+                DateTime.Compare(examADate, examBDate) >= 0)
+            {
+                TempData["Error"] = "No time-machines invented yet.";
+                return RedirectToAction("Menu");
+            }
+            var exams = (from x
+                        in examDal.Exams
+                         where x.Classroom.Equals(classroom) &&
+                         !x.CourseName.Equals(cname)
+                         select x).ToList();
+            if (IsClashingExam(astarthour, afinishhour, examADate, exams) ||
+                IsClashingExam(bstarthour, bfinishhour, examBDate, exams))
+            {
+                TempData["Error"] = "Hours clashing with other exam.";
+                return RedirectToAction("Menu");
+            }
+            var addExamQ = "INSERT INTO tblExams " +
+                            "(CourseName, Classroom, ExamADate, ExamBDate, ExamAStart, ExamAFinish, ExamBStart, ExamBFinish) " +
+                            "VALUES (@cname, @classroom, @adate, @bdate, @astart, @afinish, @bstart, @bfinish)";
+            SqlCommand examCommand = new SqlCommand(addExamQ, conn);
+            examCommand.Parameters.Add("@cname", SqlDbType.NVarChar, 50).Value = cname;
+            examCommand.Parameters.Add("@adate", SqlDbType.Date).Value = examADate;
+            examCommand.Parameters.Add("@bdate", SqlDbType.Date).Value = examBDate;
+            examCommand.Parameters.Add("@astart", SqlDbType.Int).Value = astarthour;
+            examCommand.Parameters.Add("@afinish", SqlDbType.Int).Value = afinishhour;
+            examCommand.Parameters.Add("@bstart", SqlDbType.Int).Value = bstarthour;
+            examCommand.Parameters.Add("@bfinish", SqlDbType.Int).Value = bfinishhour;
+            examCommand.Parameters.Add("@classroom", SqlDbType.NVarChar, 50).Value = classroom;
+            //assign course to lecturer
+            var addCourseToLecturer = "INSERT INTO tblLecturers " +
+                                      "(LecturerID, CourseName) " +
+                                      "VALUES (@lid, @cname)";
+            SqlCommand lecturerCommand = new SqlCommand(addCourseToLecturer, conn);
+            lecturerCommand.Parameters.Add("@lid", SqlDbType.NVarChar, 50).Value = lid;
+            lecturerCommand.Parameters.Add("@cname", SqlDbType.NVarChar, 50).Value = cname;
             command.ExecuteNonQuery();
-            examscommand.ExecuteNonQuery();
+            examCommand.ExecuteNonQuery();
+            lecturerCommand.ExecuteNonQuery();
             conn.Close();
+            TempData["Success"] = "Course " + cname + " added successfully";
             return RedirectToAction("Menu");
         }
 
@@ -129,12 +181,20 @@ namespace SCE_Website.Controllers
                             in userDal.Users
                             where x.ID.Equals(sid)
                             select x.ID).SingleOrDefault();
-            if (students == null) return RedirectToAction("Menu");
+            if (students == null)
+            {
+                TempData["Error"] = "No sudents to assign available in the system.";
+                return RedirectToAction("Menu");
+            }
             var courses = (from x
                            in studentDal.Students
                            where x.StudentId.Equals(sid)
                            select x.CourseName).ToList();
-            if(courses.Contains(scourse)) return RedirectToAction("Menu");
+            if (courses.Contains(scourse))
+            {
+                TempData["Error"] = "The student already assigned to " + scourse;
+                return RedirectToAction("Menu");
+            }
             SqlConnection conn = new SqlConnection("Data Source=DESKTOP-GH6DGFT\\AVIEL;Initial Catalog=sce_website;Integrated Security=True");
             conn.Open();
             var query = "INSERT INTO tblStudents " +
@@ -143,11 +203,16 @@ namespace SCE_Website.Controllers
             SqlCommand command = new SqlCommand(query, conn);
             command.Parameters.Add("@sid", SqlDbType.NVarChar, 50).Value = sid;
             command.Parameters.Add("@cname", SqlDbType.NVarChar, 50).Value = scourse;
-            command.Parameters.Add("@grade", SqlDbType.NVarChar, 50).Value = "NULL";
-            command.Parameters.Add("@egrade", SqlDbType.NVarChar, 50).Value = "NULL";
+            command.Parameters.Add("@grade", SqlDbType.NVarChar, 50).Value = null;
+            command.Parameters.Add("@egrade", SqlDbType.NVarChar, 50).Value = null;
             var result = command.ExecuteNonQuery();
-            if (result == 0) return RedirectToAction("Menu"); //error while inserting new values
+            if (result == 0)
+            {
+                TempData["Error"] = "Failure to assign student!";
+                return RedirectToAction("Menu"); //error while inserting new values
+            }
             conn.Close();
+            TempData["Success"] = "Added student " + sid + " to course " + scourse + " successfully.";
             return RedirectToAction("Menu");
         }
 
@@ -235,6 +300,7 @@ namespace SCE_Website.Controllers
                 UpdateComm.Parameters.Add("@eg", SqlDbType.NVarChar, 50).Value = examg;
                 UpdateComm.ExecuteNonQuery();
                 conn.Close();
+                TempData["Success"] = "Grade changed successfully for student " + sid + ".";
             }
             return RedirectToAction("GetStudentsInCourse");
 
@@ -242,6 +308,7 @@ namespace SCE_Website.Controllers
 
         public ActionResult ChangeCourseSchedule()
         {
+            if (Session["Permission"] == null || Session["Permission"].ToString() != "FaAdmin") return View("~/Views/Error.cshtml");
             string cname = Request.Form["SelectedCourse"],
                 classroom = Request.Form["Classroom"],
                 day = Request.Form["Day"],
@@ -267,15 +334,19 @@ namespace SCE_Website.Controllers
                            where x.Classroom.Equals(classroom) && x.Day.Equals(day) && !x.CourseName.Equals(cname)
                            select x).ToList();
             if (IsClashingCourse(starthour, endhour, courses)) //is clashing with other course 
+            {
+                TempData["Error"] = "The time window is already occupied by other event.";
                 return RedirectToAction("Menu");
+            }
             SqlConnection conn = new SqlConnection("Data Source=DESKTOP-GH6DGFT\\AVIEL;Initial Catalog=sce_website;Integrated Security=True");
             conn.Open();
-            var query = "UPDATE tblCourses " +
-                        "SET Day = @day, " +
-                        "Classroom = @classroom, " +
-                        "StartHour = @shour, " +
-                        "FinishHour = @fhour " +
-                        "WHERE CourseName = @cname";
+            string query;
+                query = "UPDATE tblCourses " +
+                            "SET Day = @day, " +
+                            "Classroom = @classroom, " +
+                            "StartHour = @shour, " +
+                            "FinishHour = @fhour " +
+                            "WHERE CourseName = @cname";
             SqlCommand command = new SqlCommand(query, conn);
             command.Parameters.Add("@cname", SqlDbType.NVarChar, 50).Value = cname;
             command.Parameters.Add("@day", SqlDbType.NVarChar, 50).Value = day;
@@ -284,13 +355,89 @@ namespace SCE_Website.Controllers
             command.Parameters.Add("@classroom", SqlDbType.NVarChar, 50).Value = classroom;
             command.ExecuteNonQuery();
             conn.Close();
+            TempData["Success"] = "Course schedule changed successfully.";
             return RedirectToAction("Menu");
         }
 
         public ActionResult ChangeExamSchedule()
         {
-            //TODO
-            return View("Menu");
+            if (Session["Permission"] == null || Session["Permission"].ToString() != "FaAdmin") return View("~/Views/Error.cshtml");
+            string exam = Request.Form["SelectedExam"],
+                classroom = Request.Form["Classroom"],
+                cname = Request.Form["SelectedCourse"],
+                shour = Request.Form["StartHour"],
+                fhour = Request.Form["FinishHour"];
+            var examDal = new ExamDal();
+            if (classroom == null || shour == null || fhour == null || exam == null)
+            {
+                TempData["Error"] = "The input is empty!";
+                return RedirectToAction("Menu");
+            }
+            int starthour = Convert.ToInt32(shour), finishhour = Convert.ToInt32(fhour);
+            if (starthour >= finishhour)
+            {
+                TempData["Error"] = "Start hour cannot be after finish hour.";
+                return RedirectToAction("Menu");
+            }
+            var date = Convert.ToDateTime(Request.Form["Date"]);
+            if (DateTime.Compare(date, DateTime.Now) <= 0)
+            {
+                TempData["Error"] = "No time-machines invented yet.";
+                return RedirectToAction("Menu");
+            }
+            if (exam == "ExamA") 
+            {
+                var examB = (from x
+                             in examDal.Exams
+                             where x.CourseName.Equals(cname)
+                             select x.ExamBDate).SingleOrDefault();
+                if (examB == null || DateTime.Compare(date, examB) >= 0)
+                {
+                    TempData["Error"] = "Exam A cannot be after Exam B.";
+                    return RedirectToAction("Menu");
+                }
+            }
+            if(exam == "ExamB")
+            {
+                var examA = (from x
+                             in examDal.Exams
+                             where x.CourseName.Equals(cname)
+                             select x.ExamADate).SingleOrDefault();
+                if (examA == null || DateTime.Compare(date, examA) <= 0)
+                {
+                    TempData["Error"] = "Exam B cannot be before exam A.";
+                    return RedirectToAction("Menu");
+                }
+            }
+            var exams = (from x
+                        in examDal.Exams
+                        where x.Classroom.Equals(classroom) &&
+                        !x.CourseName.Equals(cname)
+                        select x).ToList();
+            if (IsClashingExam(starthour, finishhour, date, exams))
+            {
+                TempData["Error"] = "Hours clashing with other exam.";
+                return RedirectToAction("Menu");
+            }
+            SqlConnection conn = new SqlConnection("Data Source=DESKTOP-GH6DGFT\\AVIEL;Initial Catalog=sce_website;Integrated Security=True");
+            conn.Open();
+
+            var query = "UPDATE tblExams " +
+                        "SET Classroom = @classroom, " +
+                        exam + "Date = @adate, " +
+                        exam + "Start = @shour, " +
+                        exam + "Finish = @fhour " +
+                        "WHERE CourseName = @cname";
+            SqlCommand command = new SqlCommand(query, conn);
+            command.Parameters.Add("@cname", SqlDbType.NVarChar, 50).Value = cname;
+            command.Parameters.Add("@adate", SqlDbType.Date).Value = date;
+            command.Parameters.Add("@shour", SqlDbType.Int).Value = shour;
+            command.Parameters.Add("@fhour", SqlDbType.Int).Value = fhour;
+            command.Parameters.Add("@classroom", SqlDbType.NVarChar, 50).Value = classroom;
+            command.ExecuteNonQuery();
+            conn.Close();
+            TempData["Success"] = "Exam schedule changed successfully.";
+            return RedirectToAction("Menu");
         }
 
         private bool IsClashingCourse(int startHour, int finishHour, List<Course> courses)
@@ -301,19 +448,14 @@ namespace SCE_Website.Controllers
             return false;
         }
 
-        private bool IsClashingExam(string givenExam_date, int givenExam_shour, int givenExam_fhour, string givenExam_classroom, List<Exam> exams, List<Course> courses)
+        private bool IsClashingExam(int startHour, int finishHour, DateTime dateToCheck, List<Exam> exams)
         {
             for(int i = 0; i < exams.Count(); i++)
             {
-                if (givenExam_classroom == exams[i].Classroom)
-                {
-                    if (givenExam_date == exams[i].ExamADate &&
-                        IsClashingHour(givenExam_shour, givenExam_fhour, exams[i].ExamAStart, exams[i].ExamBFinish))
-                        return true;
-                    if (givenExam_date == exams[i].ExamBDate &&
-                        IsClashingHour(givenExam_shour, givenExam_fhour, exams[i].ExamBStart, exams[i].ExamAFinish))
-                        return true;
-                }
+                if (dateToCheck.Equals(exams[i].ExamADate) && IsClashingHour(startHour, finishHour, exams[i].ExamAStart, exams[i].ExamAFinish))
+                     return true;
+                else if (dateToCheck.Equals(exams[i].ExamBDate) && IsClashingHour(startHour, finishHour, exams[i].ExamBStart, exams[i].ExamBFinish))
+                     return true;
             }
             return false;
         }

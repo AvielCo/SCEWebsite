@@ -1,9 +1,10 @@
 ﻿@model SCE_Website.ViewModel.CourseViewModel
 @using SCE_Website.Models
-@{
-    ViewBag.Title = "FaAdmin";
-}
 
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<div>
     <form action="Menu" method="post">
         <input id="AddNewCourse" type="submit" value="AddNewCourse" name="AddNewCourse" />
         <input id="AssignStudents" type="submit" value="AssignStudents" name="AssignStudents" />
@@ -11,21 +12,21 @@
         <input id="ChangeSchedule" type="submit" value="ChangeSchedule" name="ChangeSchedule" />
     </form>
 
-<table class="table table-hover">
-    <thead>
-        <tr class="table-primary">
-            <th scope="col">Course Name</th>
-            <th scope="col">Day</th>
-            <th scope="col">Starting Hour</th>
-            <th scope="col">Ending Hour</th>
-            <th scope="col">Classroom</th>
-            <th scope="col">Lecturer ID</th>
-        </tr>
-    </thead>
-    @{
-        foreach (Course obj in Model.Courses)
-        {
-            <tbody>
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">Course Name</th>
+                <th scope="col">Day</th>
+                <th scope="col">Starting Hour</th>
+                <th scope="col">Ending Hour</th>
+                <th scope="col">Classroom</th>
+                <th scope="col">Lecturer ID</th>
+            </tr>
+        </thead>
+        @{
+            foreach (Course obj in Model.Courses)
+            {
+                <tbody>
                     <tr>
                         <td>@obj.CourseName</td>
                         <td>@obj.Day</td>
@@ -34,8 +35,33 @@
                         <td>@obj.Classroom</td>
                         <td>@obj.LecturerID</td>
                     </tr>
-            </tbody>
-        }
+                </tbody>
+            }
 
-    }
-</table>
+        }
+    </table>
+    <div>
+        @{
+            if (TempData["Success"] != null)
+            {
+                <script type="text/javascript">
+                            $(document).ready(function () {
+                                var yourPrompt= '@TempData["Success"]';
+                                alert(yourPrompt);
+                            });
+                </script>
+                TempData["Success"] = null;
+            }
+            else if (TempData["Error"] != null)
+            {
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        var yourPrompt = '@TempData["Error"]'
+                        alert(yourPrompt);
+                                        });
+                </script>
+                TempData["Error"] = null;
+            }
+        }
+    </div>
+</div>

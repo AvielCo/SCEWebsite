@@ -1,31 +1,52 @@
-﻿@model  SCE_Website.ViewModel.UserViewModel
-@using SCE_Website.Models
-@using SCE_Website.Controllers
-    <html lang="en">
+﻿@model  SCE_Website.Models.User
 
-    <head>
-        <link rel="stylesheet" type="text/css" href="~/Content/login_style.css" />
-    </head>
-    <body>
-        <div class="wrapper fadeInDown">
-            <div id="formContent">
-                <!-- Tabs Titles -->
-                <h2 class="active"> WELCOME TO </h2>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<style>
+    .redText {
+        color: red;
+    }
+</style>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/login_style.css" />
+</head>
+<body>
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <!-- Tabs Titles -->
+            <h2 class="active"> WELCOME TO </h2>
 
-                <!-- Icon -->
-                <div class="fadeIn first">
-                    <img src="https://www.sce.ac.il/ver/6/tpl/website/img/logo1.png" id="icon" alt="User Icon" />
-                </div>
-
+            <!-- Icon -->
+            <div class="fadeIn first">
+                <img src="https://www.sce.ac.il/ver/6/tpl/website/img/logo1.png" id="icon" alt="User Icon" />
+            </div>
+            <div>
                 <!-- Login Form -->
                 <form action="Submit" method="post">
-                    <input type="text" id="Username" class="fadeIn second" name="Username" placeholder="login">
+                    <input type="text" id="Username" class="fadeIn second" name="Username" placeholder="login" value="@Model.ID" />
+                    <br />
+                    @Html.ValidationMessageFor(model => model.ID, null, new { @class = "redText" })
                     <input type="password" id="Password" class="fadeIn third" name="Password" placeholder="password">
+                    <br />
+                    @Html.ValidationMessageFor(model => model.Password, null, new { @class = "redText" })
                     <input id="SubmitLogin" type="submit" class="fadeIn fourth" value="Log In" name="SubmitLogin">
                 </form>
+                <div class="form-group error">
+                    @if (@TempData["PromptMessage"] != null)
+                    {
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                var yourPrompt= '@TempData["PromptMessage"]';
+                                alert(yourPrompt);
+                            });
+                        </script>
+                        TempData["PromptMessage"] = null;
+                    }
+                </div>
             </div>
-        </div>
-        
-    </body>
 
-    </html>
+        </div>
+    </div>
+
+</body>

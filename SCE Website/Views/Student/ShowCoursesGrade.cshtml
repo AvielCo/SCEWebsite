@@ -1,18 +1,13 @@
 ﻿@model SCE_Website.ViewModel.StudentViewModel
 @using SCE_Website.Models
-@{
-    ViewBag.Title = "View";
-}
-    <head>
-        <link rel="stylesheet" type="text/css" href="~/Content/table_style.css" />
-    </head>
+
     <form>
         <table class="cointainer">
             <thead>
                 <tr class="table-primary">
-                    <th>Course Name</th>
-                    <th>Course Grade</th>
-                    <th>Exam Grade</th>
+                    <th scope="col">Course Name</th>
+                    <th scope="col">Course Grade</th>
+                    <th scope="col">Exam Grade</th>
                 </tr>
             </thead>
             @{
